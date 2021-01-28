@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt =  require('bcryptjs');
+const validator = require('node-mongoose-validator');
 
 const UserSchema = new mongoose.Schema({
     name: {
@@ -35,6 +36,8 @@ UserSchema.pre('save', async function(next) {
         next(error)
     }
 })
+
+UserSchema.path('email').validate(validator.$isEmail({msg: 'Por favor, introduce un email válido'}));
 
 UserSchema.methods.isValidPassword = async function(password) {
     try {

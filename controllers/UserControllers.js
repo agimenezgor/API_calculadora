@@ -6,7 +6,7 @@ const UserController = {
     async register(req, res){
         try {
             const user = await User.create(req.body);
-            res.send({user, message: 'User succesfully created'});
+            res.send({user, message: 'Usuario creado correctamente'});
         } catch (error) {
             console.error(error);
             res.status(500).send({message: "There was a problem trying to register the user", error});
@@ -14,6 +14,7 @@ const UserController = {
     },
     async login(req, res){
         try {
+            console.log(req.body)
             const user = await User.findOne({email:req.body.email});
             if(!user){
                 res.send({message: 'El usuario no existe en la base de datos'});
