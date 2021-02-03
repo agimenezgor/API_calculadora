@@ -39,23 +39,26 @@ const SupplierController = {
     },
     async getSupplier(req, res){
         try {
+            // guardamos token y guardamos el id del usuario
+            let token = req.rawHeaders[1].split(' ')[1];
+            let userId = await findUser(token);
+           
+            // buscamos el proveedor en la base de datos
             const supplier = await Supplier.findOne({number: req.params.number});
-            res.send(supplier);
+            
+            // comprobamos que el usuario es el creador del proveedor y devolvemos
+            if( toString(supplier.user) == toString(userId)){
+                res.send(supplier);
+            }
+            else{
+                res.status(500).send({message: "No tienes permiso para ver el proveedor"})
+            }
+            
         } catch (error) {
             console.error(error);
             res.status(500).send({message: "There was a problem trying to get the supplier", error});
         }
-    },
-
-    async getAll(req, res){
-        try {
-            const suppliers = await Supplier.find();
-            res.send(suppliers);
-        } catch (error) {
-            console.error(error);
-            res.status(500).send({message: "There was a problem trying to get all suppliers", error});
-        }
-    },
+    }
 }
 
 module.exports = SupplierController;
