@@ -14,7 +14,6 @@ const UserController = {
     },
     async login(req, res){
         try {
-            console.log(req.body)
             const user = await User.findOne({email:req.body.email});
             if(!user){
                 res.send({message: 'El usuario no existe en la base de datos'});

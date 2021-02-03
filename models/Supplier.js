@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const SupplierSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
+        required: [true, 'El id del usuario es necesario'],
         ref: 'User'
     },
     name: {
