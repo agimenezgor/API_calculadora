@@ -58,7 +58,22 @@ const SupplierController = {
             console.error(error);
             res.status(500).send({message: "There was a problem trying to get the supplier", error});
         }
-    }
+    },
+    async getAll(req, res){
+        try {
+            // guardamos token y guardamos el id del usuario
+            let token = req.rawHeaders[1].split(' ')[1];
+            let userId = await findUser(token);
+
+            // buscamos todos los proveedores del usuario y devolvemos
+            const suppliers = await Supplier.find({user: userId});
+            
+            res.send(suppliers);
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({message: "There was a problem trying to get all suppliers", error});
+        }
+    },
 }
 
 module.exports = SupplierController;
