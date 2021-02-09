@@ -3,7 +3,7 @@ const CONFIG = require('../config/config');
 const User = require('../models/User');
 const Supplier = require("../models/Supplier");
 
-async function findUser(token){
+async function findUser(token, res){
     let userId = 0;
     await jwt.verify(token, CONFIG.TOKEN_SECRET, async function(error, decoded){
         if(error){
@@ -21,9 +21,8 @@ const SupplierController = {
     async register(req, res){
         try {
             // comprobar que el id del usuario existe
-            let token = req.rawHeaders[1].split(' ')[1];
-            let userId = await findUser(token);
-
+            let token = req.headers.authorization.split(' ')[1];
+            let userId = await findUser(token, res);
             // Guardamos el id del usuario
             let supplierdata = Object(req.body);
             /* supplierdata.user = userId; */
@@ -41,7 +40,7 @@ const SupplierController = {
         try {
             // guardamos token y guardamos el id del usuario
             let token = req.rawHeaders[1].split(' ')[1];
-            let userId = await findUser(token);
+            let userId = await findUser(token, res);
            
             // buscamos el proveedor en la base de datos
             const supplier = await Supplier.findOne({number: req.params.number});

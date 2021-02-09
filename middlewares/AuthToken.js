@@ -3,7 +3,6 @@ const CONFIG = require('../config/config');
 const User = require('../models/User');
 
 module.exports = async function(req, res, next){
-    console.log(req.path)
     if(req.path != '/users/login' && req.path != '/users/register'){
         if(req.headers.authorization){
             let token = req.headers.authorization.split(' ')[1];
