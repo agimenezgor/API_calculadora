@@ -41,11 +41,14 @@ const SupplierController = {
     async getSupplier(req, res){
         try {
             // guardamos token y guardamos el id del usuario
-            let token = req.rawHeaders[1].split(' ')[1];
+            let token = req.headers.authorization.split(' ')[1];
             let userId = await findUser(token, res);
            
             // buscamos el proveedor en la base de datos
-            const supplier = await Supplier.findOne({number: req.params.number});
+
+            let supplierNumber = req.params.number.split(':')[1];
+            const supplierId = userId + supplierNumber;
+            const supplier = await Supplier.findOne({id: supplierId});
             
             // comprobamos que el usuario es el creador del proveedor y devolvemos
             if( toString(supplier.user) == toString(userId)){
