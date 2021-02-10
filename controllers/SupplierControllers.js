@@ -27,10 +27,12 @@ const SupplierController = {
             let supplierdata = Object(req.body);
             /* supplierdata.user = userId; */
             supplierdata.user = userId; 
+            let supplierId =  userId + req.body.number; 
+            supplierdata.id = supplierId;
 
             // Guardar en la base de datos
             const supplier = await Supplier.create(supplierdata);
-            res.send({supplier, message: 'Supplier succesfully created'});
+            res.send({supplier, message: 'Proveedor guardado correctamente'});
         } catch (error) {
             console.error(error);
             res.status(500).send({message: "There was a problem trying to register the Supplier", error});
@@ -61,7 +63,7 @@ const SupplierController = {
     async getAll(req, res){
         try {
             // guardamos token y guardamos el id del usuario
-            let token = req.rawHeaders[1].split(' ')[1];
+            let token = req.headers.authorization.split(' ')[1];
             let userId = await findUser(token);
 
             // buscamos todos los proveedores del usuario y devolvemos

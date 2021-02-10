@@ -6,14 +6,17 @@ const SupplierSchema = new mongoose.Schema({
         required: [true, 'El id del usuario es necesario'],
         ref: 'User'
     },
+    id: {
+        type: String,
+        unique: true,
+    },
     name: {
         type: String,
         required: [true, 'El nombre es necesario']
     },
     number: {
         type: String,
-        required: [true, 'La número de proveedor es necesario'],
-        unique: true
+        required: [true, 'La número de proveedor es necesario']
     },
     days: {
         type: Number,
