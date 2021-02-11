@@ -45,7 +45,6 @@ const SupplierController = {
             let userId = await findUser(token, res);
            
             // buscamos el proveedor en la base de datos
-
             let supplierNumber = req.params.number.split(':')[1];
             const supplierId = userId + supplierNumber;
             const supplier = await Supplier.findOne({id: supplierId});
@@ -78,6 +77,34 @@ const SupplierController = {
             res.status(500).send({message: "There was a problem trying to get all suppliers", error});
         }
     },
+    async update(req, res){
+        try {
+            // guardamos token y guardamos el id del usuario
+            let token = req.headers.authorization.split(' ')[1];
+            let userId = await findUser(token);
+            // guardamos el número de proveedor
+            let supplierNumber;
+            if(req.params.number.charAt(0) === ':'){
+                supplierNumber = req.params.number.split(':')[1];
+            }else{
+                supplierNumber = req.params.number;
+            }  
+            const supplierId = userId + supplierNumber;
+
+            // comprobamos si se ha modificado el número
+            if(supplierNumber !== req.body.number){
+                req.body.id = userId + req.body.number;
+                console.log("id modificado: ",  req.body.id)
+            }
+
+            // actualizamos el proveedor
+            const supplier = await Supplier.findOneAndUpdate({id: supplierId}, req.body, {new: true});
+            res.send({supplier, message: 'Proveedor modificado correctamente'});
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({message: "There was a problem trying to update the supplier", error});
+        }
+    }
 }
 
 module.exports = SupplierController;
