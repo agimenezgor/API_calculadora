@@ -2,8 +2,12 @@ const mongoose = require('mongoose');
 
 const ReferenceSchema = new mongoose.Schema({
     supplier: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Supplier'
+        type: String,
+        required: [true, 'El proveedor es necesario']
+    },
+    id: {
+        type: String,
+        unique: true,
     },
     name: {
         type: String,
@@ -12,18 +16,17 @@ const ReferenceSchema = new mongoose.Schema({
     number: {
         type: String,
         required: [true, 'La número de referencia es necesario'],
-        unique: true
     },
     conditioning: {
-        type: number,
+        type: Number,
         required: [true, 'El condicionante es necesario'],
     },
     facing: {
-        type: number,
+        type: Number,
         default: 0
     },
     sales: {
-        type: number,
+        type: Number,
         default: 0
     }
 });
