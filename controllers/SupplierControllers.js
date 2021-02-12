@@ -104,6 +104,26 @@ const SupplierController = {
             console.error(error);
             res.status(500).send({message: "There was a problem trying to update the supplier", error});
         }
+    },
+    async delete(req, res){
+        try {
+             // guardamos token y guardamos el id del usuario
+            let token = req.headers.authorization.split(' ')[1];
+            let userId = await findUser(token);
+            // guardamos el número de proveedor
+            let supplierNumber;
+            if(req.params.number.charAt(0) === ':'){
+                supplierNumber = req.params.number.split(':')[1];
+            }else{
+                supplierNumber = req.params.number;
+            }  
+            const supplierId = userId + supplierNumber;
+            const supplier = await Supplier.findOneAndDelete({id: supplierId});
+            res.send({message: 'Proveedor borrado correctamente'});
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({message: "There was a problem trying to delete the supplier", error});
+        }
     }
 }
 
