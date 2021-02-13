@@ -53,6 +53,20 @@ const ReferenceController = {
             res.status(500).send({message: "There was a problem trying to get all references", error});
         }
     },
+    async getReference(req, res){
+        try {
+            //Buscamos el id del usuario
+            let token = req.headers.authorization.split(' ')[1];
+            let userId = await findUser(token, res);
+            // Guardamos el id de la referencia
+            let referenceId = userId + req.params.supplier + req.params.number;
+            const reference = await Reference.findOne({id: referenceId});
+            res.send(reference);
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({message: "There was a problem trying to get the reference", error});
+        }
+    }
 }
 
 module.exports = ReferenceController;
