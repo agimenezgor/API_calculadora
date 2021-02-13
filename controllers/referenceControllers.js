@@ -66,6 +66,26 @@ const ReferenceController = {
             console.error(error);
             res.status(500).send({message: "There was a problem trying to get the reference", error});
         }
+    },
+    async update(req, res){
+        try {
+            // guardamos token y guardamos el id del usuario
+            let token = req.headers.authorization.split(' ')[1];
+            let userId = await findUser(token);
+            // guardamos el número de referencia
+            let referenceId = userId + req.params.supplier + req.params.number;
+            // comprobamos si se ha modificado el número
+            if(req.body.number && req.params.number !== req.body.number){
+                req.body.id = userId + req.params.supplier + req.body.number;
+            }
+
+            // actualizamos  la referencia
+            const reference = await Reference.findOneAndUpdate({id: referenceId}, req.body, {new: true});
+            res.send({reference, message: 'Proveedor modificado correctamente'});
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({message: "There was a problem trying to update the supplier", error});
+        }
     }
 }
 
