@@ -81,10 +81,31 @@ const ReferenceController = {
 
             // actualizamos  la referencia
             const reference = await Reference.findOneAndUpdate({id: referenceId}, req.body, {new: true});
-            res.send({reference, message: 'Proveedor modificado correctamente'});
+            res.send({reference, message: 'Referencia actualizada correctamente'});
         } catch (error) {
             console.error(error);
             res.status(500).send({message: "There was a problem trying to update the supplier", error});
+        }
+    },
+    async delete(req, res){
+        try {
+             // guardamos token y guardamos el id del usuario
+            let token = req.headers.authorization.split(' ')[1];
+            let userId = await findUser(token);
+            // guardamos el número de referencia
+            let referenceId = userId + req.params.supplier + req.params.number;
+            
+            // Comprobamos si existe la referencia
+            const findReference = await Reference.findOne({id: referenceId});
+            if(findReference){
+                const reference = await Reference.findOneAndDelete({id: referenceId});
+                res.send({message: 'Referencia borrada correctamente'});
+            }else{
+                res.send({message: 'Referencia no encontrada'});
+            }     
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({message: "There was a problem trying to delete the reference", error});
         }
     }
 }
