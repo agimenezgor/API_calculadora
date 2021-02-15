@@ -84,7 +84,7 @@ const ReferenceController = {
             res.send({reference, message: 'Referencia actualizada correctamente'});
         } catch (error) {
             console.error(error);
-            res.status(500).send({message: "There was a problem trying to update the supplier", error});
+            res.status(500).send({message: "There was a problem trying to update the reference", error});
         }
     },
     async delete(req, res){
