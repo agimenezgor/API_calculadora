@@ -79,8 +79,13 @@ const OrderController = {
                 referenceArray[i] = referenceObject;
             }
             let message = "Pedido calculado correctamente";
+            let supplierConditioning = maxPalets;
             if(supplierRemaining < minPalets){
                  message = 'No tienes suficiente espacio para realizar el pedido';
+                 supplierConditioning = minPalets;
+            }
+            if(supplierRemaining < maxPalets){
+                supplierConditioning = minPalets;
             }
             // Una vez tenemos todos los datos necesarios, empezamos la ejecución del añgoritmo de cálculo
             res.send({supplierRemaining, referenceArray, message});
