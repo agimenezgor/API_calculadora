@@ -52,7 +52,24 @@ const OrderController = {
             // Guardamos todas las referencias del proveedor en la variable references
             const references = await Reference.find({supplier: supplierId});
 
-            res.send({references, message: 'Pedido calculado correctamente'});
+/**********************************************************************************************************************/
+            // Creamos el objeto reference y el array donde guardaremos los resultados y el array de palets en una variable
+            let referenceArray = [];
+            let palets = req.body.palets;
+            // Guardamos todos los datos necesarios en el array
+            for(let i = 0; i < references.length; i++){
+                let referenceObject = new Object();
+                referenceObject.name = references[i].name;
+                referenceObject.palets = palets[i];
+                referenceObject.conditioning = references[i].conditioning;
+                referenceObject.sales = references[i].sales;
+                let days = (palets[i] * references[i].conditioning) / (references[i].sales / 30);
+                referenceObject.days = days.toFixed(2);
+                referenceArray[i] = referenceObject;
+            }
+            // Una vez tenemos todos los datos necesarios, empezamos la ejecución del añgoritmo de cálculo
+
+            res.send({referenceArray, message: 'Pedido calculado correctamente'});
         } catch (error) {
             console.error(error);
             res.status(500).send({message: "There was a problem trying to get the order", error});
