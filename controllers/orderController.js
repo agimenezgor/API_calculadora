@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const CONFIG = require('../config/config');
 const User = require('../models/User');
 const Reference = require("../models/Reference");
+const Supplier = require("../models/Supplier");
 
 async function findUser(token, res){
     let userId = 0;
@@ -56,6 +57,14 @@ const OrderController = {
             // Creamos el objeto reference y el array donde guardaremos los resultados y el array de palets en una variable
             let referenceArray = [];
             let palets = req.body.palets;
+
+            // Guardamos en una variable la cantidad total de palets que nos caben en stock de este proveedor
+            let supplierRemaining = 0;
+            // Guardamos el máximo y mínimo de palets del proveedor
+            const supplier = await Supplier.findOne({id: supplierId});
+            let minPalets =  supplier.minPalets;
+            let maxPalets = supplier.maxPalets;
+
             // Guardamos todos los datos necesarios en el array
             for(let i = 0; i < references.length; i++){
                 let referenceObject = new Object();
@@ -64,12 +73,17 @@ const OrderController = {
                 referenceObject.conditioning = references[i].conditioning;
                 referenceObject.sales = references[i].sales;
                 let days = (palets[i] * references[i].conditioning) / (references[i].sales / 30);
+                referenceObject.remaining = (references[i].facing - palets[i]);
+                supplierRemaining = supplierRemaining + (references[i].facing - palets[i]);
                 referenceObject.days = days.toFixed(2);
                 referenceArray[i] = referenceObject;
             }
+            let message = "Pedido calculado correctamente";
+            if(supplierRemaining < minPalets){
+                 message = 'No tienes suficiente espacio para realizar el pedido';
+            }
             // Una vez tenemos todos los datos necesarios, empezamos la ejecución del añgoritmo de cálculo
-
-            res.send({referenceArray, message: 'Pedido calculado correctamente'});
+            res.send({supplierRemaining, referenceArray, message});
         } catch (error) {
             console.error(error);
             res.status(500).send({message: "There was a problem trying to get the order", error});
