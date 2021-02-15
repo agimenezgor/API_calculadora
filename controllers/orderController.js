@@ -64,19 +64,25 @@ const OrderController = {
             const supplier = await Supplier.findOne({id: supplierId});
             let minPalets =  supplier.minPalets;
             let maxPalets = supplier.maxPalets;
-
+            let nullReferences = 0;
             // Guardamos todos los datos necesarios en el array
             for(let i = 0; i < references.length; i++){
                 let referenceObject = new Object();
-                referenceObject.name = references[i].name;
-                referenceObject.palets = palets[i];
-                referenceObject.conditioning = references[i].conditioning;
-                referenceObject.sales = references[i].sales;
-                let days = (palets[i] * references[i].conditioning) / (references[i].sales / 30);
-                referenceObject.remaining = (references[i].facing - palets[i]);
-                supplierRemaining = supplierRemaining + (references[i].facing - palets[i]);
-                referenceObject.days = days.toFixed(2);
-                referenceArray[i] = referenceObject;
+                let remaining = (references[i].facing - palets[i]);
+                if(remaining > 0){
+                    referenceObject.name = references[i].name;
+                    referenceObject.palets = palets[i];
+                    referenceObject.conditioning = references[i].conditioning;
+                    referenceObject.sales = references[i].sales;
+                    let days = (palets[i] * references[i].conditioning) / (references[i].sales / 30);
+                    referenceObject.remaining = (references[i].facing - palets[i]);
+                    supplierRemaining = supplierRemaining + (references[i].facing - palets[i]);
+                    referenceObject.days = days.toFixed(2);
+                    referenceArray[i - nullReferences] = referenceObject;
+                }
+                else{
+                    nullReferences++;
+                }
             }
             let message = "Pedido calculado correctamente";
             let supplierConditioning = maxPalets;
@@ -87,7 +93,16 @@ const OrderController = {
             if(supplierRemaining < maxPalets){
                 supplierConditioning = minPalets;
             }
-            // Una vez tenemos todos los datos necesarios, empezamos la ejecución del añgoritmo de cálculo
+
+            // Una vez tenemos todos los datos necesarios, empezamos la ejecución del algoritmo de cálculo
+            // 1- buscamos la referencia que menos días tiene cubierto
+            // 2- sumamos una unidad al stock y recalculamos el número de días cubiertos
+            // 3- volvemos al paso 1 hasta finalizar el condicionante del proveedor
+            /* for(let i = 0; i < supplierConditioning; i++){
+
+            } */
+
+
             res.send({supplierRemaining, referenceArray, message});
         } catch (error) {
             console.error(error);
