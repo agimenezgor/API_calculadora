@@ -56,7 +56,8 @@ const OrderController = {
 /**********************************************************************************************************************/
             // Creamos el objeto reference y el array donde guardaremos los resultados y el array de palets en una variable
             let referenceArray = [];
-            let palets = req.body.palets;
+            let stringPalets = req.params.palets;
+            let palets = stringPalets.split(",");
 
             // Guardamos en una variable la cantidad total de palets que nos caben en stock de este proveedor
             let supplierRemaining = 0;
@@ -118,6 +119,7 @@ const OrderController = {
                     let referenceObject = new Object();
                     referenceObject.name = referenceArray[position].name;
                     referenceObject.number = references[position].number;
+                    referenceObject.conditioning = referenceArray[position].conditioning;
                     referenceObject.palets = 1;
                     orderArray[position] = referenceObject;
                 }
@@ -125,7 +127,7 @@ const OrderController = {
                     orderArray[position].palets++;
                 } 
             }
-            res.send({remaining: supplierRemaining - supplierConditioning, orderArray, message});
+            res.send({palets, remaining: supplierRemaining - supplierConditioning, orderArray, message});
         } catch (error) {
             console.error(error);
             res.status(500).send({message: "There was a problem trying to get the order", error});
