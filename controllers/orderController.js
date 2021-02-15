@@ -98,12 +98,34 @@ const OrderController = {
             // 1- buscamos la referencia que menos días tiene cubierto
             // 2- sumamos una unidad al stock y recalculamos el número de días cubiertos
             // 3- volvemos al paso 1 hasta finalizar el condicionante del proveedor
-            /* for(let i = 0; i < supplierConditioning; i++){
-
-            } */
-
-
-            res.send({supplierRemaining, referenceArray, message});
+            let orderArray = []
+            for(let i = 0; i < supplierConditioning; i++){
+                // buscamos mínimo días
+                let minDays = referenceArray[0].days;
+                let position = 0;
+                for(let j = 1; j < referenceArray.length; j++){
+                    if(referenceArray[j].days < minDays){
+                        minDays = referenceArray[j].days;
+                        position = j;
+                    }
+                }
+                // sumamos stock y recalculamos días
+                referenceArray[position].palets++;
+                let days = (referenceArray[position].palets * referenceArray[position].conditioning) / (referenceArray[position].sales / 30);
+                referenceArray[position].days = days.toFixed(2);
+                // guardamos la referencia en el array
+                if(!orderArray[position]){
+                    let referenceObject = new Object();
+                    referenceObject.name = referenceArray[position].name;
+                    referenceObject.number = references[position].number;
+                    referenceObject.palets = 1;
+                    orderArray[position] = referenceObject;
+                }
+                else{
+                    orderArray[position].palets++;
+                } 
+            }
+            res.send({remaining: supplierRemaining - supplierConditioning, orderArray, message});
         } catch (error) {
             console.error(error);
             res.status(500).send({message: "There was a problem trying to get the order", error});
