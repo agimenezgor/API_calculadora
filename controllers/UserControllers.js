@@ -36,7 +36,16 @@ const UserController = {
             console.error(error);
             res.status(500).send({message:'There was a problem trying to login the user', error});
         }
-    }
+    },
+    async delete(req, res){
+        try {
+            const user = await User.findOneAndDelete({email: req.params.email});
+            res.send({user, message: 'Usuario borrado correctamente'});
+        } catch (error) {
+            console.error(error);
+            res.status(500).send({message: "There was a problem trying to register the user", error});
+        }
+    },
 }
 
 module.exports = UserController;
