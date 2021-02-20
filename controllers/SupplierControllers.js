@@ -83,23 +83,42 @@ const SupplierController = {
             let token = req.headers.authorization.split(' ')[1];
             let userId = await findUser(token);
             // guardamos el número de proveedor
-            let supplierNumber;
-            if(req.params.number.charAt(0) === ':'){
-                supplierNumber = req.params.number.split(':')[1];
-            }else{
-                supplierNumber = req.params.number;
-            }  
-            const supplierId = userId + supplierNumber;
-
+            const supplierId = userId + req.params.number;
             // comprobamos si se ha modificado el número
-            if(supplierNumber !== req.body.number){
-                req.body.id = userId + req.body.number;
-                console.log("id modificado: ",  req.body.id)
+            if(req.body.number){
+                if(req.params.number !== req.body.number){
+                    req.body.id = userId + req.body.number;
+                }
             }
-
+            // comprobamos si se ha modificado el tipo de cálculo
+            const currentValue = await Supplier.findOne({id: supplierId});
+            let message = "Proveedor modificado correctamente";
+            if(req.body.calculateType && currentValue.calculateType !== req.body.calculateType){
+                switch(req.body.calculateType){
+                    case "Kilos":
+                        if(!req.body.minKilos || !req.body.maxKilos){
+                            message = "Es necesario modificar también las variables minKilos y maxKilos";
+                        }
+                        break;
+                    case "Franco":
+                        if(!req.body.money){
+                            message = "Es necesario modificar también la variable money";
+                        }
+                        break;
+                    default: 
+                    if(!req.body.minPalets || !req.body.maxPalets){
+                        message = "Es necesario modificar también las variables minPalets y maxPalets";
+                    }
+                        break;
+                }
+            }
             // actualizamos el proveedor
-            const supplier = await Supplier.findOneAndUpdate({id: supplierId}, req.body, {new: true});
-            res.send({supplier, message: 'Proveedor modificado correctamente'});
+            let supplier = [];
+            if(message === "Proveedor modificado correctamente"){
+                supplier = await Supplier.findOneAndUpdate({id: supplierId}, req.body, {new: true});
+            }
+            
+            res.send({supplier, message});
         } catch (error) {
             console.error(error);
             res.status(500).send({message: "There was a problem trying to update the supplier", error});
@@ -111,15 +130,18 @@ const SupplierController = {
             let token = req.headers.authorization.split(' ')[1];
             let userId = await findUser(token);
             // guardamos el número de proveedor
-            let supplierNumber;
-            if(req.params.number.charAt(0) === ':'){
-                supplierNumber = req.params.number.split(':')[1];
-            }else{
-                supplierNumber = req.params.number;
-            }  
+            let supplierNumber = req.params.number;
+            // guardamos el id del usuario
             const supplierId = userId + supplierNumber;
-            const supplier = await Supplier.findOneAndDelete({id: supplierId});
-            res.send({message: 'Proveedor borrado correctamente'});
+
+            // comprobamos que el proveedor existe en la base de datos
+            const sup = await Supplier.findOne({id: supplierId});
+            let message = 'El proveedor no existe en la base de datos';
+            if(sup){
+                const supplier = await Supplier.findOneAndDelete({id: supplierId});
+                message = 'Proveedor borrado correctamente';
+            }
+            res.send({message});
         } catch (error) {
             console.error(error);
             res.status(500).send({message: "There was a problem trying to delete the supplier", error});

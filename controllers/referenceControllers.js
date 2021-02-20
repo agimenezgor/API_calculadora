@@ -60,7 +60,12 @@ const ReferenceController = {
             let userId = await findUser(token, res);
             // Guardamos el id de la referencia
             let referenceId = userId + req.params.supplier + req.params.number;
-            const reference = await Reference.findOne({id: referenceId});
+            let reference = await Reference.findOne({id: referenceId});
+            if(!reference){
+                const message = Object();
+                message.message = "La referencia no existe en la base de datos";
+                reference = message;
+            }
             res.send(reference);
         } catch (error) {
             console.error(error);
