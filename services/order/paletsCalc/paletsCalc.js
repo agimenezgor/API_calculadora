@@ -1,9 +1,8 @@
-const Supplier = require("../../../models/Supplier");
-
 // Importando servicios
 const setReferencesArray = require("./setReferenceArray");
 const orderCalc = require("./orderCalc");
 const setPrintMessage = require("./setPrintMessage");
+const setSupplierConditioning = require("./setSupplierConditioning");
 
 async function paletsCalc(supplierId, references, palets){
     // Preparamos los datos necesarios antes de calcular
@@ -11,17 +10,8 @@ async function paletsCalc(supplierId, references, palets){
     const referenceArray = setReferencesArrayResponse.referenceArray;
     const supplierRemaining = setReferencesArrayResponse.supplierRemaining;
 
-    // Guardamos el máximo y mínimo de palets del proveedor
-    const supplier = await Supplier.findOne({id: supplierId});
-    let minPalets =  supplier.minPalets;
-    let maxPalets = supplier.maxPalets;
-    let supplierConditioning = maxPalets;
-    if(supplierRemaining < minPalets){
-         supplierConditioning = minPalets;
-    }
-    if(supplierRemaining < maxPalets){
-        supplierConditioning = minPalets;
-    }
+    // Calculamos la cantidad de palets que hay que pedir
+    let supplierConditioning = await setSupplierConditioning(supplierId, supplierRemaining);
 
     // Calculamos el pedido a realizar y devolvemos todos los datos
     const order = Object();
