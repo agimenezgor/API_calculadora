@@ -7,15 +7,9 @@ const paletsCalc = require("../services/order/paletsCalc");
 const OrderController = {
     async getOrder(req, res){
         try {
-            // Guardamos el id del proveedor
             let supplierId = await getSupplierId(req, res)
-            // Guardamos todas las referencias del proveedor
             const references = await getReferences(supplierId);
-
-            // Array de palets pasados como cuerpo de la petición
             let palets = req.params.palets.split(",");
-
-            // Guardamos el tipo de cálculo del proveedor
             const calculateType = await getCalculateType(supplierId);
             let order = [];
             if(calculateType === "Palets"){

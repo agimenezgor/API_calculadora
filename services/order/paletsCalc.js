@@ -1,20 +1,18 @@
 const Supplier = require("../../models/Supplier");
 
-async function paletsCalc(supplierId, references, palets){
+function setReferencesArray(references, palets){
     // Creamos el objeto reference y el array donde guardaremos los resultados y el array de palets en una variable
     let referenceArray = [];
 
     // Guardamos en una variable la cantidad total de palets que nos caben en stock de este proveedor
     let supplierRemaining = 0;
-    // Guardamos el máximo y mínimo de palets del proveedor
-    const supplier = await Supplier.findOne({id: supplierId});
-    let minPalets =  supplier.minPalets;
-    let maxPalets = supplier.maxPalets;
-    let nullReferences = 0;
+
     // Guardamos todos los datos necesarios en el array
+    let nullReferences = 0;
     for(let i = 0; i < references.length; i++){
         let referenceObject = new Object();
         let remaining = (references[i].facing - palets[i]);
+        // Si caben palets en stock, guardamos la referencia en el array
         if(remaining > 0){
             referenceObject.name = references[i].name;
             referenceObject.palets = palets[i];
@@ -30,6 +28,21 @@ async function paletsCalc(supplierId, references, palets){
             nullReferences++;
         }
     }
+    const response = Object();
+    response.supplierRemaining = supplierRemaining;
+    response.referenceArray = referenceArray;
+    return response;
+}
+async function paletsCalc(supplierId, references, palets){
+    // Preparamos los datos necesarios antes de calcular
+    const setReferencesArrayResponse = setReferencesArray(references, palets);
+    const referenceArray = setReferencesArrayResponse.referenceArray;
+    const supplierRemaining = setReferencesArrayResponse.supplierRemaining;
+
+    // Guardamos el máximo y mínimo de palets del proveedor
+    const supplier = await Supplier.findOne({id: supplierId});
+    let minPalets =  supplier.minPalets;
+    let maxPalets = supplier.maxPalets;
     let message = "Pedido calculado correctamente";
     let supplierConditioning = maxPalets;
     if(supplierRemaining < minPalets){
@@ -40,10 +53,6 @@ async function paletsCalc(supplierId, references, palets){
         supplierConditioning = minPalets;
     }
 
-    // Una vez tenemos todos los datos necesarios, empezamos la ejecución del algoritmo de cálculo
-    // 1- buscamos la referencia que menos días tiene cubierto
-    // 2- sumamos una unidad al stock y recalculamos el número de días cubiertos
-    // 3- volvemos al paso 1 hasta finalizar el condicionante del proveedor
     let orderArray = []
     for(let i = 0; i < supplierConditioning; i++){
         // buscamos mínimo días
