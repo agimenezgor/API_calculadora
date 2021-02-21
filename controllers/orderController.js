@@ -26,6 +26,10 @@ async function getSupplierId(req, res){
     // Devolvemos el id del proveedor
     return userId + req.params.number;
 }
+async function getCalculateType(supplierId){
+    const supplier = await Supplier.findOne({id: supplierId});
+    return supplier.calculateType;
+}
 async function getReferences(supplierId){
     return await Reference.find({supplier: supplierId});
 }
@@ -122,8 +126,13 @@ const OrderController = {
 
             // Array de palets pasados como cuerpo de la petición
             let palets = getStockPalets(req);
-/**********************************************************************************************************************/
-            const order = await paletsCalc(supplierId, references, palets)
+
+            // Guardamos el tipo de cálculo del proveedor
+            const calculateType = await getCalculateType(supplierId);
+            let order = [];
+            if(calculateType === "Palets"){
+                order = await paletsCalc(supplierId, references, palets)
+            }
             res.send(order)
         } catch (error) {
             console.error(error);
