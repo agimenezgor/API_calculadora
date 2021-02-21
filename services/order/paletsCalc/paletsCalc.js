@@ -3,6 +3,7 @@ const Supplier = require("../../../models/Supplier");
 // Importando servicios
 const setReferencesArray = require("./setReferenceArray");
 const orderCalc = require("./orderCalc");
+const setPrintMessage = require("./setPrintMessage");
 
 async function paletsCalc(supplierId, references, palets){
     // Preparamos los datos necesarios antes de calcular
@@ -14,15 +15,17 @@ async function paletsCalc(supplierId, references, palets){
     const supplier = await Supplier.findOne({id: supplierId});
     let minPalets =  supplier.minPalets;
     let maxPalets = supplier.maxPalets;
-    let message = "Pedido calculado correctamente";
     let supplierConditioning = maxPalets;
     if(supplierRemaining < minPalets){
-         message = 'No tienes suficiente espacio para realizar el pedido';
          supplierConditioning = minPalets;
     }
     if(supplierRemaining < maxPalets){
         supplierConditioning = minPalets;
     }
+    // Guardamos el mensaje a mostrar
+    const message = setPrintMessage(supplierConditioning, supplierRemaining);
+
+    // Calculamos el pedido a realizar y devolvemos todos los datos
     const order = Object();
         order.palets = palets;
         order.remaining = supplierRemaining - supplierConditioning;
