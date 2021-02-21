@@ -34,8 +34,7 @@ async function getReferences(supplierId){
     return await Reference.find({supplier: supplierId});
 }
 function getStockPalets(req){
-    let stringPalets = req.params.palets;
-    return stringPalets.split(",");
+    return req.params.palets.split(",");
 }
 async function paletsCalc(supplierId, references, palets){
     // Creamos el objeto reference y el array donde guardaremos los resultados y el array de palets en una variable
