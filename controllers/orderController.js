@@ -2,7 +2,7 @@
 const getSupplierId = require("../services/order/getSupplierId");
 const getReferences = require("../services/order/getReferences");
 const getCalculateType = require("../services/order/getCalculateType");
-const paletsCalc = require("../services/order/paletsCalc");
+const paletsCalc = require("../services/order/paletsCalc/paletsCalc");
 
 const OrderController = {
     async getOrder(req, res){
