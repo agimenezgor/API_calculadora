@@ -3,11 +3,8 @@ const Supplier = require("../models/Supplier");
 // Importando servicios
 const getSupplierId = require("../services/order/getSupplierId");
 const getReferences = require("../services/order/getReferences");
+const getCalculateType = require("../services/order/getCalculateType");
 
-async function getCalculateType(supplierId){
-    const supplier = await Supplier.findOne({id: supplierId});
-    return supplier.calculateType;
-}
 async function paletsCalc(supplierId, references, palets){
     // Creamos el objeto reference y el array donde guardaremos los resultados y el array de palets en una variable
     let referenceArray = [];
