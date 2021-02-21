@@ -1,4 +1,4 @@
-function orderCalc (supplierConditioning, referenceArray, references) {
+function orderCalc (supplierConditioning, referenceArray) {
     let orderArray = []
     for(let i = 0; i < supplierConditioning; i++){
         // buscamos mínimo días
@@ -18,7 +18,7 @@ function orderCalc (supplierConditioning, referenceArray, references) {
         if(!orderArray[position]){
             let referenceObject = new Object();
             referenceObject.name = referenceArray[position].name;
-            referenceObject.number = references[position].number;
+            referenceObject.number = referenceArray[position].number;
             referenceObject.conditioning = referenceArray[position].conditioning;
             referenceObject.palets = 1;
             orderArray[position] = referenceObject;

@@ -9,22 +9,16 @@ function setReferencesArray(references, palets){
     let nullReferences = 0;
     for(let i = 0; i < references.length; i++){
         let referenceObject = new Object();
-        let remaining = (references[i].facing - palets[i]);
-        // Si caben palets en stock, guardamos la referencia en el array
-        if(remaining > 0){
-            referenceObject.name = references[i].name;
-            referenceObject.palets = palets[i];
-            referenceObject.conditioning = references[i].conditioning;
-            referenceObject.sales = references[i].sales;
-            let days = (palets[i] * references[i].conditioning) / (references[i].sales / 30);
-            referenceObject.remaining = (references[i].facing - palets[i]);
-            supplierRemaining = supplierRemaining + (references[i].facing - palets[i]);
-            referenceObject.days = days.toFixed(2);
-            referenceArray[i - nullReferences] = referenceObject;
-        }
-        else{
-            nullReferences++;
-        }
+        //let remaining = (references[i].facing - palets[i]);
+        referenceObject.name = references[i].name;
+        referenceObject.palets = palets[i];
+        referenceObject.conditioning = references[i].conditioning;
+        referenceObject.sales = references[i].sales;
+        let days = (palets[i] * references[i].conditioning) / (references[i].sales / 30);
+        referenceObject.remaining = (references[i].facing - palets[i]);
+        supplierRemaining = supplierRemaining + (references[i].facing - palets[i]);
+        referenceObject.days = days.toFixed(2);
+        referenceArray[i - nullReferences] = referenceObject;
     }
     const response = Object();
     response.supplierRemaining = supplierRemaining;

@@ -1,19 +1,14 @@
 const Supplier = require("../../../models/Supplier");
 
 async function setSupplierConditioning(supplierId, supplierRemaining) {
-    // devuelve la cantidad de palets que hay que pedir
-    // Guardamos el máximo y mínimo de palets del proveedor
     const supplier = await Supplier.findOne({id: supplierId});
-    let minPalets =  supplier.minPalets;
-    let maxPalets = supplier.maxPalets;
-    let supplierConditioning = maxPalets;
-    if(supplierRemaining < minPalets){
-         supplierConditioning = minPalets;
+    if(supplierRemaining <= supplier.minPalets){
+        return supplier.minPalets;
     }
-    if(supplierRemaining < maxPalets){
-        supplierConditioning = minPalets;
+    if(supplierRemaining >= supplier.maxPalets){
+        return supplier.maxPalets;
     }
-    return supplierConditioning;
+    return supplierRemaining;
 }
 
 module.exports = setSupplierConditioning;
