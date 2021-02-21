@@ -18,40 +18,27 @@ async function findUser(token, res){
     });
     return userId;
 }
-/**
-     * Cálculo del pedido: (por palets)
-     *  1 - calcular para cuantos días hay stock de cada referencia
-     *          1.1 - Calculo del stock de cada referencia
-     *          1.2 - Cálculo de los días cubiertos con cada referencia
-     * 
-     *  2 - buscar la referencia que tenga menos días cubiertos y que la cantidad facing sea mayor a la cantidad en stock
-     *          2.1 - comprobar la cantidad de palets faltantes para llenar el facing
-     *          2.2 - borrar de la lista las referencias que les falte menos cantidad que el condicionante
-     *          2.3 - comprobar si la cantidad faltante total del total de referencias es suficiente para completar el condicionante del proveedor
-     *              (solo se realiza en la primera iteración)
-     *                  2.3.1 - sumar la cantidad de palets que caben en stock en total
-     *                  2.3.2 - si es menor que el condicionante, lanzar mensaje de atención porque no se puede completar el condicionante
-     *                  2.3.3 - en caso contrario, continuar la ejecución
-     *          2.3 - buscar la referencia con menos días de stock cubiertos y añadir una unidad al array en la posición correspondiente
-     * 
-     *  3 - modificar las cantidades de stock del array de referencias
-     *          3.1 sumar la cantidad pedida al stock de la referencia
-     *          3.2 recalcular la cantidad de días faltantes
-     * 
-     *  4 - volver al paso 1 hasta que se cumpla el condicionante
-     */
+async function getSupplierId(req, res){
+    //Buscamos el id del usuario
+    let token = req.headers.authorization.split(' ')[1];
+    let userId = await findUser(token, res);
+
+    // Devolvemos el id del proveedor
+    return userId + req.params.number;
+}
+async function getReferences(supplierId){
+    return await Reference.find({supplier: supplierId});
+}
+async function paletsCalc(){
+    
+}
 const OrderController = {
     async getOrder(req, res){
         try {
-            //Buscamos el id del usuario
-            let token = req.headers.authorization.split(' ')[1];
-            let userId = await findUser(token, res);
-
             // Guardamos el id del proveedor
-            let supplierId =  userId + req.params.number;
-
-            // Guardamos todas las referencias del proveedor en la variable references
-            const references = await Reference.find({supplier: supplierId});
+            let supplierId = await getSupplierId(req, res)
+            // Guardamos todas las referencias del proveedor
+            const references = await getReferences(supplierId);
 
 /**********************************************************************************************************************/
             // Creamos el objeto reference y el array donde guardaremos los resultados y el array de palets en una variable
