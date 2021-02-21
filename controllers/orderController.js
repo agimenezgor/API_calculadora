@@ -29,6 +29,10 @@ async function getSupplierId(req, res){
 async function getReferences(supplierId){
     return await Reference.find({supplier: supplierId});
 }
+function getStockPalets(req){
+    let stringPalets = req.params.palets;
+    return stringPalets.split(",");
+}
 async function paletsCalc(){
     
 }
@@ -40,11 +44,11 @@ const OrderController = {
             // Guardamos todas las referencias del proveedor
             const references = await getReferences(supplierId);
 
+            // Array de palets pasados como cuerpo de la petición
+            let palets = getStockPalets(req);
 /**********************************************************************************************************************/
             // Creamos el objeto reference y el array donde guardaremos los resultados y el array de palets en una variable
             let referenceArray = [];
-            let stringPalets = req.params.palets;
-            let palets = stringPalets.split(",");
 
             // Guardamos en una variable la cantidad total de palets que nos caben en stock de este proveedor
             let supplierRemaining = 0;
