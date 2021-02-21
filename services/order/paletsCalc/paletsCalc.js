@@ -15,7 +15,6 @@ async function paletsCalc(supplierId, references, palets){
 
     // Calculamos el pedido a realizar y devolvemos todos los datos
     const order = Object();
-        order.palets = palets;
         order.remaining = supplierRemaining - supplierConditioning;
         order.orderArray = orderCalc(supplierConditioning, referenceArray, references);
         order.message = setPrintMessage(supplierConditioning, supplierRemaining);
